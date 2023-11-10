@@ -6,8 +6,7 @@ import 'package:projet/views/AddMovieView.dart';
 import 'package:projet/views/MovieDetailPage.dart';
 
 class HomePageView extends StatefulWidget {
-  const HomePageView({super.key, required this.title});
-  final String title;
+  const HomePageView({super.key});
 
   @override
   State<HomePageView> createState() => _HomePageViewState();
@@ -19,7 +18,7 @@ class _HomePageViewState extends State<HomePageView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text('Liste des films'),
       ),
       body: ListView.builder(
         //liste des films contenus dans la liste movies
@@ -35,7 +34,7 @@ class _HomePageViewState extends State<HomePageView> {
                 MaterialPageRoute(
                   // renvoi à la page MovieDetailPage
                   builder: (context) => MovieDetailPage(
-                    movies: movie,
+                    movie: movie,
                   ),
                 ),
               );

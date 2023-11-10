@@ -7,25 +7,28 @@ import 'package:projet/views/HomePageView.dart';
 
 class AddMovieView extends StatefulWidget {
   final Movie?
-      movies; // Accepter un film existant ou null pour ajouter un nouveau film.
+      movie; // Accepter un film existant ou null pour ajouter un nouveau film.
 
-  const AddMovieView({super.key, this.movies});
+  const AddMovieView({super.key, this.movie});
 
   @override
   State<AddMovieView> createState() => _AddMovieViewState();
 }
 
-TextEditingController titleController = TextEditingController();
-TextEditingController pictureController = TextEditingController();
-TextEditingController dateController = TextEditingController();
-
 class _AddMovieViewState extends State<AddMovieView> {
+  TextEditingController titleController = TextEditingController();
+  TextEditingController pictureController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
+
+  late String pageTitle = 'Ajouter un film';
+
   @override
   void initState() {
     super.initState();
-    if (widget.movies != null) {
+    if (widget.movie != null) {
       // Si un film doit être modifié, rempli les contrôleurs avec ses valeurs.
-      titleController.text = widget.movies!.title;
+      titleController.text = widget.movie!.title;
+      pageTitle = 'Modifier film';
       //pictureController.text = widget.movies!.picture;
       //dateController.text = widget.movies!.releaseDate;
     }
@@ -36,10 +39,7 @@ class _AddMovieViewState extends State<AddMovieView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.movies == null
-            // Change le titre suivant s'il faut modifier un film ou ajouter un nouveau film
-            ? 'Ajouter un nouveau film'
-            : 'Modifier le Film'),
+        title: Text(pageTitle),
       ),
       body: Column(
         children: [
@@ -108,13 +108,7 @@ class _AddMovieViewState extends State<AddMovieView> {
               pictureController.clear();
               dateController.clear();
 
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      const HomePageView(title: 'Liste des films'),
-                ),
-              );
+              Navigator.pop(context);
             },
             child: const Icon(Icons.add),
           ),
