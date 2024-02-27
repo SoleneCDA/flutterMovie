@@ -1,13 +1,10 @@
-// ignore_for_file: file_names
-
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:projet/globals/movieList.dart';
 import 'package:projet/globals/navigateTo.dart';
 import 'package:projet/models/Movie.dart';
 import 'package:projet/views/HomePageView.dart';
 
+// ignore: must_be_immutable
 class MovieView extends StatefulWidget {
   Movie? movieToUpdate;
 
