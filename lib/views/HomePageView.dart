@@ -1,9 +1,10 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:projet/globals/MovieList.dart';
+import 'package:projet/globals/movieList.dart';
+import 'package:projet/models/Movie.dart';
 import 'package:projet/views/AddMovieView.dart';
-import 'package:projet/views/MovieDetailPage.dart';
+import 'package:projet/views/UpdateMovieView.dart';
 
 class HomePageView extends StatefulWidget {
   const HomePageView({super.key});
@@ -18,58 +19,95 @@ class _HomePageViewState extends State<HomePageView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Liste des films'),
+        automaticallyImplyLeading:
+            false, //supprimer la fleche de retour de l'AppBar
+        centerTitle: true,
+        title: const Text(
+          'Liste des films',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
       ),
-      body: ListView.builder(
-        //liste des films contenus dans la liste movies
-        padding: const EdgeInsets.all(8),
-        itemCount: movies.length,
-        itemBuilder: (context, index) {
-          final movie = movies[index];
-          return ListTile(
-            onTap: () {
-              Navigator.push(
-                // permet d'appuyer sur le titre du film pour voir le détail
-                context,
-                MaterialPageRoute(
-                  // renvoi à la page MovieDetailPage
-                  builder: (context) => MovieDetailPage(
-                    movie: movie,
+      body: Stack(
+        children: [
+          ListView.builder(
+            itemCount: movies.length,
+            itemBuilder: ((context, index) {
+              Movie movie = movies[index];
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  onTap: () {},
+                  shape: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  title: Text(movie.title),
+                  subtitle: Text(movie.releaseDate),
+                  leading: Text(movie.picture),
+                  trailing: SizedBox(
+                    width: 97,
+                    child: Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UpdateMovieView(
+                                    movieToUpdate: movie,
+                                  ),
+                                ),
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.edit,
+                              color: Colors.green,
+                            )),
+                        IconButton(
+                          onPressed: () {
+                            movies.removeAt(index);
+                            setState(() {});
+                          },
+                          icon: const Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
-            },
-            shape: OutlineInputBorder(
-              // bordure pour chaque film + radius
-              borderRadius: BorderRadius.circular(10),
-            ),
-            title: Text(movie.title), // ne montre que le titre du film
-          );
-        },
-      ),
-      floatingActionButton: SizedBox(
-        width: 200,
-        child: FloatingActionButton(
-          // bouton pour pouvoir ajouter un film dans la liste movies
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    const AddMovieView(), // renvoi à la page AddMovieView
-              ),
-            );
-          },
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Ajouter un nouveau film'), // Titre du bouton
-              Icon(
-                Icons.arrow_forward, // Icône fleche droite
-              ),
-            ],
+            }),
           ),
-        ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: MaterialButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AddMovieView(),
+                    ),
+                  );
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.all(15),
+                color: Colors.pink,
+                child: const Text(
+                  'Ajouter un film',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

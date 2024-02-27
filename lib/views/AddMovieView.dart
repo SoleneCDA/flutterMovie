@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:projet/globals/MovieList.dart';
+import 'package:projet/globals/movieList.dart';
 import 'package:projet/models/Movie.dart';
 import 'package:projet/views/HomePageView.dart';
 
@@ -20,6 +20,8 @@ class _AddMovieViewState extends State<AddMovieView> {
   TextEditingController pictureController = TextEditingController();
   TextEditingController dateController = TextEditingController();
 
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  bool firstTime = true;
   late String pageTitle = 'Ajouter un film';
 
   @override
@@ -39,80 +41,112 @@ class _AddMovieViewState extends State<AddMovieView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(pageTitle),
+        foregroundColor: Colors
+            .white, // -> permet de mettre la fleche de retour (et le texte) en blanc
+        //automaticallyImplyLeading: false,      -> supprime la fleche de retour
+        centerTitle: true,
+        title: Text(
+          pageTitle,
+          //style: const TextStyle(color: Colors.white),   -> pas besoin si on met un foregroundColor
+        ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 16.0),
-          TextFormField(
-            controller: titleController,
-            decoration: InputDecoration(
-              labelText: 'Titre du film',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Form(
+          key: formKey,
+          autovalidateMode:
+              firstTime // vérification: pas de verification cas par cas avant le clic sur le bouton.
+                  //Si erreur de remplissage: verification direct, caractére par caractere, au fur et à mesure que l'utilisateur tape du texte
+                  ? AutovalidateMode.disabled
+                  : AutovalidateMode.always,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: titleController,
+                //autofocus: true,     -> met le curseur sur ce champs direct
+                textCapitalization: TextCapitalization.characters,
+                // keyboardType: TextInputType.number,    -> clavier juste avec des nombres
+                decoration: InputDecoration(
+                  labelText: 'Titre du film',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    // if (value == null || value == '')
+                    return 'Entrez le titre du film';
+                  }
+                  return null;
+                },
               ),
-            ),
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Entrez le titre du film';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16.0),
-          TextFormField(
-            controller: pictureController,
-            decoration: InputDecoration(
-              labelText: 'Adresse de l\'image du film',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: TextFormField(
+                  controller: pictureController,
+                  decoration: InputDecoration(
+                    labelText: 'Adresse de l\'image du film',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Entrez l\'adresse de l\'image du film';
+                    }
+                    return null;
+                  },
+                ),
               ),
-            ),
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Entrez l\'adresse de l\'image du film';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 16.0),
-          TextFormField(
-            controller: dateController,
-            decoration: InputDecoration(
-              labelText: 'Date de sortie du film',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: TextFormField(
+                  controller: dateController,
+                  decoration: InputDecoration(
+                    labelText: 'Date de sortie du film',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Entrez la date de sortie du film';
+                    }
+                    return null;
+                  },
+                ),
               ),
-            ),
-            validator: (value) {
-              if (value!.isEmpty) {
-                return 'Entrez la date de sortie du film';
-              }
-              return null;
-            },
+              Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: IconButton(
+                  style: const ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(Colors.green)),
+                  icon: const Icon(Icons.add),
+                  onPressed: () {
+                    firstTime = false;
+                    setState(() {});
+                    if (formKey.currentState!.validate()) {
+                      Movie newMovie = Movie(
+                        title: titleController.text,
+                        picture: pictureController.text,
+                        releaseDate: dateController.text,
+                      );
+                      movies.add(newMovie);
+                      print(movies.length);
+                    }
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePageView(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16.0),
-          FloatingActionButton(
-            onPressed: () {
-              final title = titleController.text;
-              final picture = pictureController.text;
-              final date = dateController.text;
-
-              final newMovie =
-                  Movie(title: title, picture: picture, releaseDate: date);
-
-              movies.add(newMovie);
-
-              // Effacer les contrôleurs après la soumission.
-              titleController.clear();
-              pictureController.clear();
-              dateController.clear();
-
-              Navigator.pop(context);
-            },
-            child: const Icon(Icons.add),
-          ),
-        ],
+        ),
       ),
     );
   }
