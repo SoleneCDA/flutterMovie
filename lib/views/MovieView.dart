@@ -1,40 +1,37 @@
 // ignore_for_file: file_names
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:projet/globals/movieList.dart';
+import 'package:projet/globals/navigateTo.dart';
 import 'package:projet/models/Movie.dart';
 import 'package:projet/views/HomePageView.dart';
 
-class AddMovieView extends StatefulWidget {
-  final Movie?
-      movie; // Accepter un film existant ou null pour ajouter un nouveau film.
+class MovieView extends StatefulWidget {
+  Movie? movieToUpdate;
 
-  const AddMovieView({super.key, this.movie});
+  MovieView({super.key, this.movieToUpdate});
 
   @override
-  State<AddMovieView> createState() => _AddMovieViewState();
+  State<MovieView> createState() => _MovieViewState();
 }
 
-class _AddMovieViewState extends State<AddMovieView> {
-  TextEditingController titleController = TextEditingController();
-  TextEditingController pictureController = TextEditingController();
-  TextEditingController dateController = TextEditingController();
+class _MovieViewState extends State<MovieView> {
+  late Movie? movieToUpdate = widget.movieToUpdate;
+
+  late TextEditingController titleController = TextEditingController(
+      text: movieToUpdate != null ? movieToUpdate?.title : '');
+  late TextEditingController pictureController = TextEditingController(
+      text: movieToUpdate != null ? movieToUpdate?.picture : '');
+  late TextEditingController releaseDateController = TextEditingController(
+      text: movieToUpdate != null ? movieToUpdate?.releaseDate : '');
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  bool firstTime = true;
-  late String pageTitle = 'Ajouter un film';
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.movie != null) {
-      // Si un film doit être modifié, rempli les contrôleurs avec ses valeurs.
-      titleController.text = widget.movie!.title;
-      pageTitle = 'Modifier film';
-      //pictureController.text = widget.movies!.picture;
-      //dateController.text = widget.movies!.releaseDate;
-    }
-  }
+  late String viewTitle =
+      movieToUpdate != null ? 'Modifier le film' : 'Ajouter un film';
+  bool firstTime = true;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +43,7 @@ class _AddMovieViewState extends State<AddMovieView> {
         //automaticallyImplyLeading: false,      -> supprime la fleche de retour
         centerTitle: true,
         title: Text(
-          pageTitle,
+          viewTitle,
           //style: const TextStyle(color: Colors.white),   -> pas besoin si on met un foregroundColor
         ),
       ),
@@ -101,7 +98,7 @@ class _AddMovieViewState extends State<AddMovieView> {
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: TextFormField(
-                  controller: dateController,
+                  controller: releaseDateController,
                   decoration: InputDecoration(
                     labelText: 'Date de sortie du film',
                     border: OutlineInputBorder(
@@ -118,30 +115,34 @@ class _AddMovieViewState extends State<AddMovieView> {
               ),
               Padding(
                 padding: const EdgeInsets.all(25.0),
-                child: IconButton(
-                  style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(Colors.green)),
-                  icon: const Icon(Icons.add),
+                child: MaterialButton(
                   onPressed: () {
                     firstTime = false;
                     setState(() {});
                     if (formKey.currentState!.validate()) {
-                      Movie newMovie = Movie(
-                        title: titleController.text,
-                        picture: pictureController.text,
-                        releaseDate: dateController.text,
-                      );
-                      movies.add(newMovie);
-                      print(movies.length);
-                    }
+                      if (movieToUpdate != null) {
+                        movieToUpdate!.title = titleController.text;
+                        movieToUpdate!.picture = pictureController.text;
+                        movieToUpdate!.releaseDate = releaseDateController.text;
+                      } else {
+                        Movie newMovie = Movie(
+                          title: titleController.text,
+                          picture: pictureController.text,
+                          releaseDate: releaseDateController.text,
+                        );
+                        movies.add(newMovie);
+                      }
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePageView(),
-                      ),
-                    );
+                      navigateTo(const HomePageView(), context);
+                    }
                   },
+                  color: Colors.pink,
+                  child: Text(
+                    movieToUpdate != null
+                        ? "modifier le film"
+                        : "Ajouter un film",
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],

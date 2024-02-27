@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:projet/globals/movieList.dart';
+import 'package:projet/globals/navigateTo.dart';
 import 'package:projet/models/Movie.dart';
-import 'package:projet/views/AddMovieView.dart';
-import 'package:projet/views/UpdateMovieView.dart';
+import 'package:projet/views/MovieView.dart';
 
 class HomePageView extends StatefulWidget {
   const HomePageView({super.key});
@@ -53,7 +53,7 @@ class _HomePageViewState extends State<HomePageView> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => UpdateMovieView(
+                                  builder: (context) => MovieView(
                                     movieToUpdate: movie,
                                   ),
                                 ),
@@ -86,12 +86,7 @@ class _HomePageViewState extends State<HomePageView> {
               padding: const EdgeInsets.all(15.0),
               child: MaterialButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AddMovieView(),
-                    ),
-                  );
+                  navigateTo(MovieView(), context);
                 },
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
